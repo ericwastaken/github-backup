@@ -23,7 +23,9 @@ GITHUB_USERNAME=your-username-here
 GITHUB_TOKEN=your-token-here
 ```
 
-> **Note:** If your PAT changes after you have run the script, you will need to delete the local git repository and re-run the script. This is because the PAT is stored in the git config file, and the script does not currently update the git config file. It is possible to update the git config, but it's not currently supported in this script (see roadmap).
+> **Notes:** 
+> - The way git stores repo details when accessing via PAT, the PAT is stored in the git config file along with the backup. This means that if you keep the backup in an insecure location, the PAT could be compromised. Therefore, it is recommended that you keep the backup in a secure location.
+> - If your PAT changes after you have run the script, you will need to delete the local git repository and re-run the script. This is because the PAT is stored in the git config file, and the script does not currently update the git config file. It is possible to update the git config, but it's not currently supported in this script (see roadmap).
 
 ### Creating a Personal Access Token
 
@@ -82,3 +84,4 @@ Instructions are based on [GitHub Docs](https://docs.github.com/en/repositories/
 - Add support for regex matching on repository name (for inclusion and exclusion via individual command line arguments.)
 - Add support for updating the git config file with a new PAT? (When a user's PAT changes, the old one stored in the git config file needs to be updated. This means that the user needs to update the config, which is not supported now by the script. An easy workaround is for the user to delete the local git repository and re-run the script with the new PAT.)
   - This might make sense as a separate script, since it's not really part of the backup process, but more so a one-time update. 
+- Add a restore script? (This would be a separate script that would take a local backup and restore it to a new GitHub repo. This would be useful for creating a new repo from a backup, or for restoring a repo that was accidentally deleted.)
