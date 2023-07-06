@@ -1,0 +1,5 @@
+# Exclude python virtual environment
+/app/venv/
+
+# Exclude any .env files (environment files)
+**/.env
