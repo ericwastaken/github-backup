@@ -8,7 +8,7 @@
 
 Introducing a powerful backup script that helps you safeguard your valuable code. 🛡️🔒
 
-🔗 [GitHub Repository Backup Script](https://github.com/ericwastaken/github-backup)
+🔗 [GitHub Repo Backup](https://github.com/ericwastaken/github-backup)
 
 With this script, you can back up all repositories for a given git username or organization. It creates a clean backup using GitHub MIRROR, preserving the complete history and branches. Plus, it utilizes git-lfs to ensure all large files are securely backed up. 💾
 
