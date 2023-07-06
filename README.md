@@ -64,11 +64,26 @@ The backup script is Python3 and can either be run natively or via Docker.
 - The script is packaged into the Docker image, therefore, if you make any python script changes, you need to re-build the image.
 - The .env file is passed as a volume, so updating credentials does not require rebuilding.
 
-## Restoring a backed-up repository to GitHub
+## Restoring a backed-up repository
+
+A backed-up repository can't be used directly in MIRROR mode. Therfore, before you can use it to do work (and have a working copy), you need to restore it to a normal git repository.
+
+### Restoring to a local git repository
+
+1. Create a new directory for the restored repository.
+2. Change into the backed-up respiratory directory.
+3. `git clone . <new_working_copy_directory>`
+4. `cd <new_working_copy_directory>`
+
+You now have a working copy of the repository. Don't forget to set up a remote repository if you intend to push changes back to a remote repository. This remote does not need to be the same as the original repository remote. You can setup a new remote for the restored repository with `git remote set-url origin <new_remote_url>`.
+
+Also, if you have any large files in the repository, and want to use Git LFS, you will need to make sure you have git-lfs installed so that when you push to the new remote, those large files are stored using LFS.
+
+### Restoring to GitHub (or some other hosted Git)
 
 Instructions are based on [GitHub Docs](https://docs.github.com/en/repositories/creating-and-managing-repositories/duplicating-a-repository#mirroring-a-repository).
 
-1. Create a new empty repository on GitHub.
+1. Create a new empty repository on GitHub (or elsewhere).
 2. From inside the backup repository folder, run the following commands with the path-to-git of your destination repository:
     ```bash
     git push --mirror [path to git - either ssh or https]
