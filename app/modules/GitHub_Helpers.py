@@ -34,8 +34,7 @@ def get_urls_for_team_repositories(username, token, org, team, url_type):
             return urls
 
     except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        return []
+        raise Exception(f"Get urls: an error occurred: {str(e)}")
 
 
 def get_ssh_urls_for_team_repositories(username, token, org, team):

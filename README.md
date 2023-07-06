@@ -23,6 +23,8 @@ GITHUB_USERNAME=your-username-here
 GITHUB_TOKEN=your-token-here
 ```
 
+> **Note:** If your PAT changes after you have run the script, you will need to delete the local git repository and re-run the script. This is because the PAT is stored in the git config file, and the script does not currently update the git config file. It is possible to update the git config, but it's not currently supported in this script (see roadmap).
+
 ### Creating a Personal Access Token
 
 See [GitHub Docs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) for more information.
@@ -56,7 +58,11 @@ The backup script is Python3 and can either be run natively or via Docker.
       $ ./x-docker-backup-githup.sh "your-org-name" "your-team-name" "/full/path/to/your/repos/backup/directory"
       ```
 
-## Restoring a backed up repository to GitHub
+**Docker Notes:**
+- The script is packaged into the Docker image, therefore, if you make any python script changes, you need to re-build the image.
+- The .env file is passed as a volume, so updating credentials does not require rebuilding.
+
+## Restoring a backed-up repository to GitHub
 
 Instructions are based on [GitHub Docs](https://docs.github.com/en/repositories/creating-and-managing-repositories/duplicating-a-repository#mirroring-a-repository).
 
@@ -74,3 +80,5 @@ Instructions are based on [GitHub Docs](https://docs.github.com/en/repositories/
 ## Roadmap
 
 - Add support for regex matching on repository name (for inclusion and exclusion via individual command line arguments.)
+- Add support for updating the git config file with a new PAT? (When a user's PAT changes, the old one stored in the git config file needs to be updated. This means that the user needs to update the config, which is not supported now by the script. An easy workaround is for the user to delete the local git repository and re-run the script with the new PAT.)
+  - This might make sense as a separate script, since it's not really part of the backup process, but more so a one-time update. 

@@ -41,7 +41,7 @@ def is_git_lfs_installed():
         return False
 
 
-# Begin main script
+# Begin the main script
 
 # Register the SIGINT handler
 signal.signal(signal.SIGINT, handle_sigint)
@@ -63,56 +63,75 @@ repos_directory = args.repos_directory
 team_name = args.team_name
 org_name = args.org_name
 
-# Get SSH URLs for team repositories
-url_list = get_https_urls_for_team_repositories(github_username, github_token, org_name, team_name)
-
-# A simple counter to stop after a certain number of repositories. Set to 0 to disable.
-# Useful for testing.
-stop_after_count = 2
-repo_count = 0
-
 # Welcome message
 print(f'Backing up from GitHub organization: "{org_name}", team" "{team_name}"')
 print(f'Backing up to: "{repos_directory}"\n')
 
-# Iterate over the SSH URLs
-for repo_url in url_list:
-    repo_count += 1
-    repo_name = repo_url.split("/")[-1].replace(".git", "")
-    local_path = os.path.join(repos_directory, repo_name)
+try:
 
-    if os.path.exists(local_path):
-        print(f"Updating {repo_name}...")
+    # Get SSH URLs for team repositories
+    url_list = get_https_urls_for_team_repositories(github_username, github_token, org_name, team_name)
+
+    # A simple counter to stop after a certain number of repositories. Set to 0 to disable.
+    # Useful for testing.
+    stop_after_count = 0
+    repo_count = 0
+
+    # Count how many repos had issues
+    repo_fail_count = 0
+
+    # Iterate over the SSH URLs
+    for repo_url in url_list:
+        repo_count += 1
+        repo_name = repo_url.split("/")[-1].replace(".git", "")
+        local_path = os.path.join(repos_directory, repo_name)
+
         try:
-            # Fetch the latest changes
-            repo = Repo(local_path)
-            repo.remotes.origin.fetch()
-            # Fetch Git LFS objects
-            os.chdir(local_path)
-            os.system("git lfs fetch --all")
+
+            if os.path.exists(local_path):
+                print(f"Updating {repo_name}...")
+                # Fetch the latest changes
+                repo = Repo(local_path)
+                repo.remotes.origin.fetch()
+                # Fetch Git LFS objects
+                os.chdir(local_path)
+                os.system("git lfs fetch --all")
+            else:
+                print(f"Cloning {repo_name}...")
+                # Clone the repository (in MIRROR mode)
+                Repo.clone_from(repo_url, local_path, mirror=True)
+                # Fetch Git LFS objects
+                os.chdir(local_path)
+                os.system("git lfs fetch --all")
+
         except Exception as e:
+            repo_fail_count += 1
             print(f"General error: {str(e)}")
+
         except GitCommandError as e:
+            repo_fail_count += 1
             print(f"Git command error: {str(e)}")
+
+        print(f"Done with {repo_name}.\n")
+
+        # Check if SIGKILL was received and stop if it was
+        if sigkill_received:
+            break
+
+        # If stop_after_count is set, and we've reached that number of repositories, stop
+        if 0 < stop_after_count <= repo_count:
+            break
+
+    # Ending banner
+    print(f"Finished backing up {repo_count} repositories with {repo_fail_count} failures.")
+    # Decide whether to exit with a failure code
+    if repo_fail_count > 0:
+        # There were failures, so return non-zero
+        exit(1)
     else:
-        print(f"Cloning {repo_name}...")
-        try:
-            # Clone the repository (in MIRROR mode)
-            Repo.clone_from(repo_url, local_path, mirror=True)
-            # Fetch Git LFS objects
-            os.chdir(local_path)
-            os.system("git lfs fetch --all")
-        except Exception as e:
-            print(f"General error: {str(e)}")
-        except GitCommandError as e:
-            print(f"Git command error: {str(e)}")
+        # No failures, so return zero
+        exit(0)
 
-    print(f"Done with {repo_name}.\n")
-
-    # Check if SIGKILL was received and stop if it was
-    if sigkill_received:
-        break
-
-    # If stop_after_count is set and we've reached that number of repositories, stop
-    if 0 < stop_after_count <= repo_count:
-        break
+except Exception as e:
+    print(f"General error: {str(e)}")
+    exit(1)
