@@ -8,6 +8,11 @@ It Can be run repeatedly to update the local backup with the latest changes.
 
 This script loosely implements the instructions found in [GitHub Docs](https://docs.github.com/en/repositories/creating-and-managing-repositories/duplicating-a-repository#mirroring-a-repository).
 
+Note; despite having a similar name, this repo is not related to any of the following, all of which appear to be much more complete GitHub backup tools also in Python.
+
+- https://github.com/josegonzalez/python-github-backup
+- https://github.com/clockfort/GitHub-Backup
+
 ## GitHub Authentication
 
 The backup script needs to authenticate to GitHub. It does this by using a GitHub Personal Access Token (PAT). For help creating a PAT see below.
